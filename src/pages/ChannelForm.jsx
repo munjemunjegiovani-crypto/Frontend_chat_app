@@ -70,7 +70,7 @@ export default function ChannelForm({ edit = false }) {
           </label>
           <div className="mt-5 p-4 rounded-xl bg-soft/70 text-sm text-muted flex gap-3">
             <Icon name="info" className="text-gold-ink" />
-            <span>Anyone on Kova can find and follow your channel. Only you can post; followers can react and comment, and you’ll see comments in your Activity inbox.</span>
+            <span>Anyone on Gochat can find and follow your channel. Only you can post; followers can react and comment, and you’ll see comments in your Activity inbox.</span>
           </div>
           <button className="btn-primary w-full h-[52px] mt-6" disabled={!name.trim() || busy} onClick={save}>
             {busy ? <Spinner size={18} /> : edit ? 'Save changes' : <>Create channel <Icon name="arrow_forward" size={20} /></>}

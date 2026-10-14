@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Kova design tokens (RGB triplets so Tailwind opacity modifiers work) */
+/* Gochat design tokens (RGB triplets so Tailwind opacity modifiers work) */
 :root {
   --canvas: 250 247 242;      /* Warm Ivory */
   --card: 255 255 255;

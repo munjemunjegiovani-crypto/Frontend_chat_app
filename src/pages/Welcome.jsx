@@ -41,7 +41,7 @@ export default function Welcome() {
         <div className="absolute -right-10 -top-10 w-[300px] h-[300px] rounded-full border border-[#C9A86A]/20" />
         <div className="flex items-center gap-3 relative">
           <Logo size={44} className="!shadow-none" />
-          <span className="font-serif text-2xl tracking-[0.2em]">KOVA</span>
+          <span className="font-serif text-2xl tracking-[0.2em]">GOCHAT</span>
         </div>
         <div className="relative max-w-md">
           <p className="text-[11px] tracking-[0.2em] uppercase text-[#C9A86A] mb-4">Correspondence, refined</p>
@@ -81,10 +81,10 @@ export default function Welcome() {
             <div className="relative mb-5">
               <div className="absolute inset-0 rounded-full bg-gold/30 blur-xl" />
               <div className="relative w-20 h-20 rounded-full bg-[#14213D] flex items-center justify-center ring-1 ring-gold/40">
-                <span className="font-serif text-4xl text-[#C9A86A]">K</span>
+                <span className="font-serif text-4xl text-[#C9A86A]">G</span>
               </div>
             </div>
-            <h1 className="font-serif text-[40px] leading-none tracking-[0.06em] text-ink">KOVA</h1>
+            <h1 className="font-serif text-[40px] leading-none tracking-[0.06em] text-ink">GOCHAT</h1>
             <p className="font-serif italic text-2xl text-gold-ink mt-3">Speak freely, stay close</p>
             <div className="gold-rule w-20 mt-5" />
           </div>
@@ -94,7 +94,7 @@ export default function Welcome() {
               <span className="eyebrow">{mode === 'register' ? 'Step 01 / Registry' : 'Welcome back'}</span>
               <span className="text-label-md text-muted">Confidential</span>
             </div>
-            <h2 className="font-serif text-[26px] text-ink">{mode === 'register' ? 'Create your account' : 'Sign in to Kova'}</h2>
+            <h2 className="font-serif text-[26px] text-ink">{mode === 'register' ? 'Create your account' : 'Sign in to Gochat'}</h2>
             <p className="text-sm text-muted mt-1 mb-5 leading-6">
               {mode === 'register'
                 ? 'Claim your name and start writing to the people who matter.'
@@ -187,7 +187,7 @@ export default function Welcome() {
           <Icon name="history_edu" className="text-gold-ink mt-1" />
           <div>
             <p className="font-serif italic text-xl leading-7 text-ink">“True conversation is an heirloom, treasured in deliberate silence.”</p>
-            <p className="eyebrow mt-2">The Kova Companion</p>
+            <p className="eyebrow mt-2">The Gochat Companion</p>
           </div>
         </div>
       </div>

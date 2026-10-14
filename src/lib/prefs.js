@@ -1,5 +1,5 @@
 // Small per-device preferences kept in localStorage
-const KEY = 'kova.prefs';
+const KEY = 'gochat.prefs';
 const defaults = {
   theme: 'system', // light | dark | system
   textScale: 'medium', // small | medium | large
@@ -12,7 +12,7 @@ const defaults = {
 export function loadPrefs() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
-    const theme = localStorage.getItem('kova.theme') || saved.theme || defaults.theme;
+    const theme = localStorage.getItem('gochat.theme') || saved.theme || defaults.theme;
     return { ...defaults, ...saved, theme };
   } catch {
     return { ...defaults };
@@ -22,7 +22,7 @@ export function loadPrefs() {
 export function savePrefs(p) {
   try {
     localStorage.setItem(KEY, JSON.stringify(p));
-    localStorage.setItem('kova.theme', p.theme);
+    localStorage.setItem('gochat.theme', p.theme);
   } catch { /* ignore */ }
 }
 

@@ -42,9 +42,9 @@ export default function NewChat() {
   };
 
   const invite = async () => {
-    const text = `Join me on Kova — a classic, private messenger. Sign up and find me as @${me.username}: ${window.location.origin}`;
+    const text = `Join me on Gochat — a classic, private messenger. Sign up and find me as @${me.username}: ${window.location.origin}`;
     try {
-      if (navigator.share) await navigator.share({ title: 'Kova', text });
+      if (navigator.share) await navigator.share({ title: 'Gochat', text });
       else { await navigator.clipboard.writeText(text); toast('Invite copied — paste it to your friends'); }
     } catch { /* cancelled */ }
   };
@@ -58,7 +58,7 @@ export default function NewChat() {
           {[
             ['group_add', 'New group', 'Gather several people in one chat', () => navigate('/new-group')],
             ['hub', 'New channel', 'Broadcast posts to your followers', () => navigate('/channels/new')],
-            ['share', 'Invite friends to Kova', 'Share a link to the app', invite],
+            ['share', 'Invite friends to Gochat', 'Share a link to the app', invite],
           ].map(([icon, title, sub, fn]) => (
             <button key={title} onClick={fn} className="w-full flex items-center gap-4 px-4 py-3.5 text-left hover:bg-soft/60">
               <span className="w-11 h-11 rounded-full bg-gold-soft text-gold-ink flex items-center justify-center"><Icon name={icon} /></span>
@@ -72,7 +72,7 @@ export default function NewChat() {
         </div>
 
         <div className="flex items-center justify-between px-1 mt-6 mb-2">
-          <span className="eyebrow">{q ? 'People on Kova' : 'Your contacts'}</span>
+          <span className="eyebrow">{q ? 'People on Gochat' : 'Your contacts'}</span>
           {loading && <Spinner size={16} />}
         </div>
         <div className="card overflow-hidden divide-y divide-[rgb(var(--line)/0.15)]">

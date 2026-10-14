@@ -29,9 +29,9 @@ function Boot() {
   return (
     <div className="h-[100dvh] flex flex-col items-center justify-center gap-6 bg-canvas">
       <Logo size={64} />
-      <div className="font-serif text-3xl tracking-wide text-ink">KOVA</div>
+      <div className="font-serif text-3xl tracking-wide text-ink">GOCHAT</div>
       <Spinner />
-      {slow && <p className="text-sm text-muted text-center max-w-xs px-6">Waking up the Kova server… on the free plan this can take up to a minute the first time.</p>}
+      {slow && <p className="text-sm text-muted text-center max-w-xs px-6">Waking up the Gochat server… on the free plan this can take up to a minute the first time.</p>}
     </div>
   );
 }
@@ -52,8 +52,8 @@ export default function App() {
 
   useEffect(() => {
     const go = (e) => navigate(e.detail);
-    window.addEventListener('kova:navigate', go);
-    return () => window.removeEventListener('kova:navigate', go);
+    window.addEventListener('gochat:navigate', go);
+    return () => window.removeEventListener('gochat:navigate', go);
   }, [navigate]);
 
   if (booting) return <Boot />;

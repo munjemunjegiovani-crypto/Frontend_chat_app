@@ -9,7 +9,7 @@ export async function registerServiceWorker() {
   try {
     registration = await navigator.serviceWorker.register('/sw.js');
     navigator.serviceWorker.addEventListener('message', (e) => {
-      if (e.data?.type === 'navigate') window.dispatchEvent(new CustomEvent('kova:navigate', { detail: e.data.url }));
+      if (e.data?.type === 'navigate') window.dispatchEvent(new CustomEvent('gochat:navigate', { detail: e.data.url }));
     });
     return registration;
   } catch {
@@ -61,7 +61,7 @@ export async function showLocalNotification(title, options) {
   } catch { /* fall back */ }
   try {
     const n = new Notification(title, options);
-    n.onclick = () => { window.focus(); if (options?.data?.url) window.dispatchEvent(new CustomEvent('kova:navigate', { detail: options.data.url })); n.close(); };
+    n.onclick = () => { window.focus(); if (options?.data?.url) window.dispatchEvent(new CustomEvent('gochat:navigate', { detail: options.data.url })); n.close(); };
   } catch { /* unsupported */ }
   return null;
 }

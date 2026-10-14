@@ -10,7 +10,7 @@ export const SECTIONS = [
   ['starred', 'star', 'Starred messages', 'Messages you saved'],
   ['blocked', 'block', 'Blocked contacts', 'People who cannot reach you'],
   ['account', 'manage_accounts', 'Account', 'Password, sign out, delete'],
-  ['about', 'info', 'About Kova', 'Version and help'],
+  ['about', 'info', 'About Gochat', 'Version and help'],
 ];
 
 export default function SettingsMenu() {
@@ -24,7 +24,7 @@ export default function SettingsMenu() {
         <div className="h-16 px-4 flex items-center gap-3">
           <Logo size={34} className="md:hidden" />
           <div className="flex-1">
-            <div className="eyebrow leading-none">Kova</div>
+            <div className="eyebrow leading-none">Gochat</div>
             <h1 className="font-serif text-[24px] leading-8 text-ink">Settings</h1>
           </div>
           <button className="btn-ghost" onClick={() => setPrefs({ theme: dark ? 'light' : 'dark' })} aria-label="Toggle dark mode" title="Toggle dark mode">
@@ -64,7 +64,7 @@ export default function SettingsMenu() {
           <Icon name="logout" size={20} /> Sign out
         </button>
         <p className="text-center font-serif italic text-gold-ink/80 text-[14px] mt-8">“True conversation is an heirloom, treasured in deliberate silence.”</p>
-        <p className="text-center eyebrow !text-muted mt-2">Kova · v1.0</p>
+        <p className="text-center eyebrow !text-muted mt-2">Gochat · v1.0</p>
       </div>
     </div>
   );

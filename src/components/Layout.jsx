@@ -22,7 +22,7 @@ function NavRail() {
   const navigate = useNavigate();
   return (
     <nav className="hidden md:flex flex-col items-center w-[84px] shrink-0 py-4 gap-1 bg-[#14213D] dark:bg-[#0A0F19] text-[#C9C3B5] border-r border-[#C9A86A]/15">
-      <button onClick={() => navigate('/')} className="mb-5" aria-label="Kova home">
+      <button onClick={() => navigate('/')} className="mb-5" aria-label="Gochat home">
         <Logo size={44} className="!shadow-none ring-1 ring-[#C9A86A]/40" />
       </button>
       {NAV.map((n) => {
@@ -79,7 +79,7 @@ function ConnectionBar() {
   return (
     <div className="shrink-0 flex items-center justify-center gap-2 py-1.5 text-xs bg-gold-soft text-gold-ink">
       <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-      Connecting to Kova…
+      Connecting to Gochat…
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default function CallList() {
         <div className="h-16 px-4 flex items-center gap-3">
           <Logo size={34} className="md:hidden" />
           <div className="flex-1">
-            <div className="eyebrow leading-none">Kova</div>
+            <div className="eyebrow leading-none">Gochat</div>
             <h1 className="font-serif text-[24px] leading-8 text-ink">Calls</h1>
           </div>
           <button className="btn-ghost" onClick={() => setPicking((p) => !p)} aria-label="New call" title="New call"><Icon name={picking ? 'close' : 'add_call'} /></button>
@@ -115,14 +115,14 @@ export default function CallList() {
           <div className="text-center py-12 px-6">
             <Icon name="call" size={40} className="text-gold-ink/70" />
             <p className="font-serif text-xl text-ink mt-2">{filter === 'missed' ? 'No missed calls' : 'No calls yet'}</p>
-            <p className="text-sm text-muted mt-1">Tap the phone icon in any chat to call. Both of you need Kova open.</p>
+            <p className="text-sm text-muted mt-1">Tap the phone icon in any chat to call. Both of you need Gochat open.</p>
           </div>
         )}
         <div className="card mt-6 p-4 flex gap-3">
           <span className="w-10 h-10 rounded-full bg-soft flex items-center justify-center text-gold-ink shrink-0"><Icon name="shield" /></span>
           <div>
             <div className="font-medium text-ink">Device-to-device calls</div>
-            <p className="text-xs text-muted leading-5 mt-0.5">Audio and video travel directly between your devices over an encrypted WebRTC connection. Kova only helps the two devices find each other.</p>
+            <p className="text-xs text-muted leading-5 mt-0.5">Audio and video travel directly between your devices over an encrypted WebRTC connection. Gochat only helps the two devices find each other.</p>
           </div>
         </div>
       </div>

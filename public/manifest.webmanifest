@@ -1,6 +1,6 @@
 {
-  "name": "Kova",
-  "short_name": "Kova",
+  "name": "Gochat",
+  "short_name": "Gochat",
   "description": "Speak freely, stay close. Chats, groups, channels, moments and calls.",
   "start_url": "/",
   "display": "standalone",
