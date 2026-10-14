@@ -287,7 +287,7 @@ export function AppProvider({ children }) {
     };
     const onNotification = (n) => {
       setNotifCount((c) => c + 1);
-      notify('Kova', n.text, { tag: `n-${n.id}`, url: n.postId ? `/posts/${n.postId}` : '/activity' });
+      notify('Gochat', n.text, { tag: `n-${n.id}`, url: n.postId ? `/posts/${n.postId}` : '/activity' });
       toast(n.text, { icon: n.type === 'comment' || n.type === 'reply' ? 'chat_bubble' : 'notifications', to: n.postId ? `/posts/${n.postId}` : n.channelId ? `/channels/${n.channelId}` : '/activity' });
     };
     const onChannelPost = ({ post, channelName }) => {
@@ -332,7 +332,7 @@ export function AppProvider({ children }) {
     [conversations]
   );
   useEffect(() => {
-    document.title = totalUnread ? `(${totalUnread}) Kova` : 'Kova — Speak freely, stay close';
+    document.title = totalUnread ? `(${totalUnread}) Gochat` : 'Gochat — Speak freely, stay close';
   }, [totalUnread]);
 
   const value = {

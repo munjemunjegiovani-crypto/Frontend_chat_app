@@ -193,14 +193,14 @@ function Notifications() {
     if (p === 'granted') {
       setPrefs({ notifications: true });
       const ok = await enablePush();
-      toast(ok ? 'Notifications are on — even when Kova is closed' : 'Notifications are on while Kova is open', { icon: 'notifications_active' });
+      toast(ok ? 'Notifications are on — even when Gochat is closed' : 'Notifications are on while Gochat is open', { icon: 'notifications_active' });
     }
     else toast('Notifications were blocked. You can allow them in your browser’s site settings.', { error: true });
   };
   return (
     <Card title="Notifications & chimes" icon="notifications">
       <div className="divide-y divide-[rgb(var(--line)/0.15)]">
-        <SettingRow title="Desktop & phone alerts" sub={perm === 'granted' ? (pushSupported() ? 'You will be alerted even when Kova is closed' : 'Shown while Kova is open in the background') : perm === 'denied' ? 'Blocked in your browser settings' : perm === 'unsupported' ? 'Not supported in this browser' : 'Allow Kova to show alerts'}>
+        <SettingRow title="Desktop & phone alerts" sub={perm === 'granted' ? (pushSupported() ? 'You will be alerted even when Gochat is closed' : 'Shown while Gochat is open in the background') : perm === 'denied' ? 'Blocked in your browser settings' : perm === 'unsupported' ? 'Not supported in this browser' : 'Allow Gochat to show alerts'}>
           {perm === 'granted' ? <Toggle checked={prefs.notifications} onChange={(v) => { setPrefs({ notifications: v }); if (v) enablePush(); else disablePush(); }} /> :
             <button className="btn-outline !h-9 !px-3" onClick={ask} disabled={perm === 'unsupported' || perm === 'denied'}>Allow</button>}
         </SettingRow>
@@ -211,7 +211,7 @@ function Notifications() {
           </div>
         </SettingRow>
       </div>
-      <p className="text-xs text-muted mt-4 leading-5">Tip: on phones, add Kova to your home screen (browser menu → “Add to Home screen”) so it opens like an app. On iPhone, notifications only work after adding Kova to the home screen (iOS 16.4 or later).</p>
+      <p className="text-xs text-muted mt-4 leading-5">Tip: on phones, add Gochat to your home screen (browser menu → “Add to Home screen”) so it opens like an app. On iPhone, notifications only work after adding Gochat to the home screen (iOS 16.4 or later).</p>
     </Card>
   );
 }
@@ -309,32 +309,32 @@ function Account() {
 function About() {
   const { me, toast } = useApp();
   const share = async () => {
-    const text = `Join me on Kova — find me as @${me.username}: ${window.location.origin}`;
-    try { if (navigator.share) await navigator.share({ title: 'Kova', text }); else { await navigator.clipboard.writeText(text); toast('Invite copied'); } } catch { /* ignore */ }
+    const text = `Join me on Gochat — find me as @${me.username}: ${window.location.origin}`;
+    try { if (navigator.share) await navigator.share({ title: 'Gochat', text }); else { await navigator.clipboard.writeText(text); toast('Invite copied'); } } catch { /* ignore */ }
   };
   return (
     <div className="space-y-5">
       <Card>
         <div className="flex flex-col items-center text-center py-4">
           <img src="/icon-192.png" alt="" className="w-20 h-20 rounded-[22%] shadow-lvl2" />
-          <h2 className="font-serif text-3xl tracking-[0.08em] text-ink mt-4">KOVA</h2>
+          <h2 className="font-serif text-3xl tracking-[0.08em] text-ink mt-4">GOCHAT</h2>
           <p className="font-serif italic text-gold-ink text-lg">Speak freely, stay close</p>
           <p className="text-xs text-muted mt-2">Version 1.0</p>
         </div>
       </Card>
-      <Card title="How Kova works" icon="help">
+      <Card title="How Gochat works" icon="help">
         <ul className="space-y-3 text-sm text-ink/90">
           {[
             ['chat_bubble', 'Find friends by their @username and chat in real time — with photos, videos, documents and voice notes.'],
             ['groups', 'Create groups, share an invite link, and make other members admins.'],
             ['hub', 'Start a channel to publish posts. Followers react and comment; comments arrive in your Activity inbox.'],
-            ['call', 'Voice and video calls connect your two devices directly. Both people need Kova open.'],
+            ['call', 'Voice and video calls connect your two devices directly. Both people need Gochat open.'],
             ['auto_awesome', 'Moments are shared with people you chat with and vanish after 24 hours.'],
           ].map(([i, t]) => <li key={t} className="flex gap-3"><Icon name={i} size={20} className="text-gold-ink mt-0.5" /> <span>{t}</span></li>)}
         </ul>
         <button className="btn-primary w-full mt-5" onClick={share}><Icon name="share" size={18} /> Invite friends</button>
       </Card>
-      <Quote cite="Kova">Words composed with care endure like bronze.</Quote>
+      <Quote cite="Gochat">Words composed with care endure like bronze.</Quote>
     </div>
   );
 }

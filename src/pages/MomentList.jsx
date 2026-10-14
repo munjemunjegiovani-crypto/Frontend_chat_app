@@ -11,12 +11,12 @@ export function useMoments() {
   useEffect(() => { load(); }, [load]);
   useSocketEvent('moments:changed', load);
   useEffect(() => {
-    window.addEventListener('kova:moments', load);
-    return () => window.removeEventListener('kova:moments', load);
+    window.addEventListener('gochat:moments', load);
+    return () => window.removeEventListener('gochat:moments', load);
   }, [load]);
   return { data, load };
 }
-export const refreshMoments = () => window.dispatchEvent(new Event('kova:moments'));
+export const refreshMoments = () => window.dispatchEvent(new Event('gochat:moments'));
 
 const BACKGROUNDS = ['#14213D', '#755A24', '#1F4D3A', '#6B1E2E', '#3A4664', '#0E1420'];
 

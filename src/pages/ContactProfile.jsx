@@ -50,7 +50,7 @@ export default function ContactProfile() {
           </div>
           <div className="relative mt-3 inline-flex items-center gap-2 px-3 h-7 rounded-full bg-soft text-label-md text-ink/80">
             {live.online && <span className="w-1.5 h-1.5 rounded-full bg-gold" />}
-            {user.blockedMe ? 'Kova member' : lastSeen(live)}
+            {user.blockedMe ? 'Gochat member' : lastSeen(live)}
           </div>
           <h2 className="relative font-serif text-3xl text-ink mt-3">{user.name}</h2>
           <p className="relative text-sm text-muted mt-1">@{user.username}</p>
@@ -62,7 +62,7 @@ export default function ContactProfile() {
               ['call', 'Audio', () => startCall(user, 'voice'), false, blocked || user.blockedMe],
               ['videocam', 'Video', () => startCall(user, 'video'), false, blocked || user.blockedMe],
               ['share', 'Share', async () => {
-                const t = `Find ${user.name} on Kova: @${user.username} — ${window.location.origin}`;
+                const t = `Find ${user.name} on Gochat: @${user.username} — ${window.location.origin}`;
                 try { if (navigator.share) await navigator.share({ text: t }); else { await navigator.clipboard.writeText(t); toast('Copied'); } } catch { /* ignore */ }
               }],
             ].map(([icon, label, fn, primary, disabled]) => (
@@ -79,7 +79,7 @@ export default function ContactProfile() {
         <div className="card p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-serif text-xl text-ink flex items-center gap-2"><Icon name="verified_user" className="text-gold-ink" /> Identity</h3>
-            <span className="eyebrow">Kova registry</span>
+            <span className="eyebrow">Gochat registry</span>
           </div>
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-soft/70">
@@ -139,7 +139,7 @@ export default function ContactProfile() {
             <Icon name="block" />
           </button>
         </div>
-        <Quote cite="Kova">A sanctuary of quiet discretion.</Quote>
+        <Quote cite="Gochat">A sanctuary of quiet discretion.</Quote>
       </div>
       <Confirm
         open={confirm}

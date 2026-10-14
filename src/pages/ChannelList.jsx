@@ -11,13 +11,13 @@ export function useChannels() {
   useEffect(() => { load(); }, [load]);
   useSocketEvent('channel:post', load);
   useEffect(() => {
-    window.addEventListener('kova:channels', load);
-    return () => window.removeEventListener('kova:channels', load);
+    window.addEventListener('gochat:channels', load);
+    return () => window.removeEventListener('gochat:channels', load);
   }, [load]);
   return { data, load };
 }
 
-export const refreshChannels = () => window.dispatchEvent(new Event('kova:channels'));
+export const refreshChannels = () => window.dispatchEvent(new Event('gochat:channels'));
 
 function ChannelRow({ c, active, onClick, action }) {
   const preview = c.lastPost ? (c.lastPost.body || (c.lastPost.mediaType === 'image' ? '📷 Photo' : c.lastPost.mediaType === 'video' ? '🎬 Video' : '📎 Attachment')) : c.description || 'No posts yet';
@@ -72,7 +72,7 @@ export default function ChannelList() {
         <div className="h-16 px-4 flex items-center gap-3">
           <Logo size={34} className="md:hidden" />
           <div className="flex-1">
-            <div className="eyebrow leading-none">Kova</div>
+            <div className="eyebrow leading-none">Gochat</div>
             <h1 className="font-serif text-[24px] leading-8 text-ink">Channels</h1>
           </div>
           <button className="btn-ghost relative" onClick={() => navigate('/activity')} aria-label="Activity" title="Activity">

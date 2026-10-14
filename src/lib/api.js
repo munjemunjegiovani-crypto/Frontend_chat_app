@@ -1,6 +1,6 @@
 export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/$/, '');
 
-const TOKEN_KEY = 'kova.token';
+const TOKEN_KEY = 'gochat.token';
 export const getToken = () => {
   try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
 };
@@ -28,7 +28,7 @@ export async function api(path, { method = 'GET', body, signal } = {}) {
     });
   } catch (e) {
     if (e.name === 'AbortError') throw e;
-    throw new Error('Cannot reach the Kova server. It may be waking up — try again in a few seconds.');
+    throw new Error('Cannot reach the Gochat server. It may be waking up — try again in a few seconds.');
   }
   const data = await res.json().catch(() => ({}));
   if (res.status === 401 && token) onUnauthorized();

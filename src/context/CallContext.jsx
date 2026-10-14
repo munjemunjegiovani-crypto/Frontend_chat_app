@@ -205,7 +205,7 @@ export function CallProvider({ children }) {
       setCall({ id: callId, peer: from, type, direction: 'incoming', status: 'ringing' });
       startRing(false);
       if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-        showLocalNotification(`Incoming ${type} call`, { body: `${from.name} is calling you on Kova`, icon: fileUrl(from.avatarId) || '/icon-192.png', tag: `call-${callId}`, requireInteraction: true, data: { url: '/calls' } });
+        showLocalNotification(`Incoming ${type} call`, { body: `${from.name} is calling you on Gochat`, icon: fileUrl(from.avatarId) || '/icon-192.png', tag: `call-${callId}`, requireInteraction: true, data: { url: '/calls' } });
       }
     };
     const onAccepted = async ({ callId, socketId }) => {

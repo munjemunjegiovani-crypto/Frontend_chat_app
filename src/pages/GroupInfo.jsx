@@ -256,7 +256,7 @@ export default function GroupInfo() {
             <Icon name="logout" size={20} /> Exit group
           </button>
         </div>
-        <Quote cite="Kova · Groups">What is shared among friends remains timeless.</Quote>
+        <Quote cite="Gochat · Groups">What is shared among friends remains timeless.</Quote>
       </div>
 
       {adding && <AddMembers conv={conv} onClose={() => setAdding(false)} onDone={upsertConversation} />}

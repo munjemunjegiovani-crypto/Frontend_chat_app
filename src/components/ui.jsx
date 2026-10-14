@@ -18,7 +18,7 @@ export function Icon({ name, className = '', fill = false, size, style }) {
 
 export function Logo({ size = 36, className = '' }) {
   return (
-    <img src="/icon-192.png" alt="Kova" width={size} height={size} className={`rounded-[22%] shadow-lvl1 ${className}`} />
+    <img src="/icon-192.png" alt="Gochat" width={size} height={size} className={`rounded-[22%] shadow-lvl1 ${className}`} />
   );
 }
 
@@ -108,7 +108,7 @@ export function Badge({ count, className = '' }) {
 }
 
 // Header used at the top of every pane
-export function PaneHeader({ title, eyebrow = 'Kova', back, actions, children, sub, onTitleClick }) {
+export function PaneHeader({ title, eyebrow = 'Gochat', back, actions, children, sub, onTitleClick }) {
   const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-20 pt-safe bg-canvas/85 backdrop-blur-xl border-b hairline">

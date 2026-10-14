@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="112" fill="#14213D"/>
   <rect x="28" y="28" width="456" height="456" rx="92" fill="none" stroke="#C9A86A" stroke-opacity=".35" stroke-width="4"/>
-  <text x="256" y="350" text-anchor="middle" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="300" font-weight="600" fill="#C9A86A">K</text>
+  <text x="256" y="350" text-anchor="middle" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="300" font-weight="600" fill="#C9A86A">G</text>
   <circle cx="368" cy="160" r="16" fill="#C9A86A"/>
 </svg>

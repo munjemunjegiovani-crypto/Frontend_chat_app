@@ -74,9 +74,9 @@ export default function ChatList() {
   const [showArchived, setShowArchived] = useState(false);
   const { setPrefs, toast } = useApp();
   const [askNotif, setAskNotif] = useState(() => {
-    try { return 'Notification' in window && Notification.permission === 'default' && !localStorage.getItem('kova.notifAsked'); } catch { return false; }
+    try { return 'Notification' in window && Notification.permission === 'default' && !localStorage.getItem('gochat.notifAsked'); } catch { return false; }
   });
-  const dismissNotif = () => { setAskNotif(false); try { localStorage.setItem('kova.notifAsked', '1'); } catch { /* ignore */ } };
+  const dismissNotif = () => { setAskNotif(false); try { localStorage.setItem('gochat.notifAsked', '1'); } catch { /* ignore */ } };
   const turnOnNotif = async () => {
     dismissNotif();
     const p = await Notification.requestPermission();
@@ -121,7 +121,7 @@ export default function ChatList() {
         <div className="h-16 px-4 flex items-center gap-3">
           <Logo size={34} className="md:hidden" />
           <div className="flex-1 min-w-0">
-            <div className="eyebrow leading-none">Kova</div>
+            <div className="eyebrow leading-none">Gochat</div>
             <h1 className="font-serif text-[24px] leading-8 text-ink">{showArchived ? 'Archived' : 'Chats'}</h1>
           </div>
           <button className="btn-ghost" onClick={() => navigate('/new')} aria-label="New chat" title="New chat">
@@ -168,7 +168,7 @@ export default function ChatList() {
           <span className="w-10 h-10 rounded-full bg-gold-soft text-gold-ink flex items-center justify-center shrink-0"><Icon name="notifications_active" size={20} /></span>
           <div className="flex-1">
             <div className="font-medium text-ink">Never miss a message</div>
-            <p className="text-xs text-muted mt-0.5 leading-5">Turn on notifications to be alerted when friends write or call — even when Kova is closed.</p>
+            <p className="text-xs text-muted mt-0.5 leading-5">Turn on notifications to be alerted when friends write or call — even when Gochat is closed.</p>
             <div className="flex gap-2 mt-3">
               <button className="btn-primary !h-9 !px-4" onClick={turnOnNotif}>Turn on</button>
               <button className="btn-outline !h-9 !px-4" onClick={dismissNotif}>Not now</button>
