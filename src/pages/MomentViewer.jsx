@@ -22,6 +22,7 @@ export default function MomentViewer() {
   const [viewers, setViewers] = useState(null);
   const [confirm, setConfirm] = useState(false);
   const videoRef = useRef(null);
+  const sending = useRef(false);
   const started = useRef(Date.now());
   const elapsedBefore = useRef(0);
 
@@ -91,19 +92,20 @@ export default function MomentViewer() {
     );
   }
 
-  const sendReply = async () => {
-    const text = reply.trim();
-    if (!text) return;
+  // Send a message to the moment's owner with a snapshot of the moment quoted above it
+  // (used for typed replies and for the like / emoji reaction buttons)
+  const sendAboutMoment = async (text, doneMessage, icon = 'send') => {
+    if (sending.current) return false;
+    sending.current = true;
     try {
       const conv = await api('/conversations/direct', { method: 'POST', body: { userId: uid } });
       upsertConversation(conv);
-      // Take a "screenshot" of the moment so the reply shows it above the message, like WhatsApp status replies
       let previewId = null;
       if (m.type !== 'text') {
         try {
           const blob = await makeMomentPreview(m);
           if (blob) previewId = (await uploadFile(blob, { name: 'moment.jpg' })).id;
-        } catch { /* send the reply without the picture rather than failing */ }
+        } catch { /* send without the picture rather than failing */ }
       }
       const momentQuote = {
         type: m.type,
@@ -114,11 +116,20 @@ export default function MomentViewer() {
         previewId,
       };
       await api(`/conversations/${conv.id}/messages`, { method: 'POST', body: { body: text, momentQuote } });
-      setReply('');
-      toast(`Reply sent to ${group.user.name.split(' ')[0]}`, { icon: 'send', to: `/chat/${conv.id}` });
+      toast(doneMessage, { icon, to: `/chat/${conv.id}` });
+      return true;
     } catch (e) {
       toast(e.message, { error: true });
+      return false;
+    } finally {
+      sending.current = false;
     }
+  };
+
+  const sendReply = async () => {
+    const text = reply.trim();
+    if (!text) return;
+    if (await sendAboutMoment(text, `Reply sent to ${group.user.name.split(' ')[0]}`)) setReply('');
   };
 
   return (
@@ -192,11 +203,7 @@ export default function MomentViewer() {
                 <button className="w-12 h-12 rounded-full bg-[#C9A86A] text-[#0E1420] flex items-center justify-center" onClick={sendReply} aria-label="Send"><Icon name="arrow_upward" /></button>
               ) : (
                 ['❤️', '👏'].map((em) => (
-                  <button key={em} className="w-12 h-12 rounded-full bg-white/10 backdrop-blur text-xl" onClick={async () => {
-                    const conv = await api('/conversations/direct', { method: 'POST', body: { userId: uid } });
-                    await api(`/conversations/${conv.id}/messages`, { method: 'POST', body: { body: `${em} Reacted to your moment` } });
-                    toast('Reaction sent', { icon: 'favorite' });
-                  }}>{em}</button>
+                  <button key={em} className="w-12 h-12 rounded-full bg-white/10 backdrop-blur text-xl" onClick={() => sendAboutMoment(em, 'Reaction sent', 'favorite')}>{em}</button>
                 ))
               )}
             </div>
