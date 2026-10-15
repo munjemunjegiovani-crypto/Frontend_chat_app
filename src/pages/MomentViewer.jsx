@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { api, fileUrl } from '../lib/api.js';
+import { api, fileUrl, uploadFile } from '../lib/api.js';
+import { makeMomentPreview } from '../lib/momentPreview.js';
 import { useApp } from '../context/AppContext.jsx';
 import { Avatar, Confirm, Icon, Modal, Spinner } from '../components/ui.jsx';
 import { ago } from '../lib/format.js';
@@ -96,8 +97,23 @@ export default function MomentViewer() {
     try {
       const conv = await api('/conversations/direct', { method: 'POST', body: { userId: uid } });
       upsertConversation(conv);
-      const quote = m.type === 'text' ? `“${m.body.slice(0, 80)}”` : m.type === 'image' ? '📷 Photo' : '🎬 Video';
-      await api(`/conversations/${conv.id}/messages`, { method: 'POST', body: { body: `↩︎ Replying to your moment ${quote}\n\n${text}` } });
+      // Take a "screenshot" of the moment so the reply shows it above the message, like WhatsApp status replies
+      let previewId = null;
+      if (m.type !== 'text') {
+        try {
+          const blob = await makeMomentPreview(m);
+          if (blob) previewId = (await uploadFile(blob, { name: 'moment.jpg' })).id;
+        } catch { /* send the reply without the picture rather than failing */ }
+      }
+      const momentQuote = {
+        type: m.type,
+        body: m.body || '',
+        background: m.background,
+        ownerId: uid,
+        ownerName: group.user.name,
+        previewId,
+      };
+      await api(`/conversations/${conv.id}/messages`, { method: 'POST', body: { body: text, momentQuote } });
       setReply('');
       toast(`Reply sent to ${group.user.name.split(' ')[0]}`, { icon: 'send', to: `/chat/${conv.id}` });
     } catch (e) {

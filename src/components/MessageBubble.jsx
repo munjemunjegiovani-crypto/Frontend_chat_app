@@ -127,6 +127,27 @@ export default function MessageBubble({
               <Icon name="forward" size={14} /> Forwarded
             </div>
           )}
+          {m.momentQuote && !deleted && (
+            <div
+              className={`mb-1.5 rounded-lg overflow-hidden border-l-[3px] border-gold flex ${mine ? 'bg-black/15 dark:bg-black/10' : 'bg-soft'} ${media ? 'mt-1' : ''}`}
+            >
+              <div className="flex-1 min-w-0 px-3 py-2">
+                <span className={`block text-[12px] font-semibold ${mine ? 'text-[#E5C281] dark:text-[#14213D]' : 'text-gold-ink'}`}>
+                  {m.momentQuote.ownerId === meId ? 'Your moment' : `${(m.momentQuote.ownerName || 'Moment').split(' ')[0]}’s moment`}
+                </span>
+                <span className={`block text-[13px] line-clamp-2 ${mine ? 'opacity-80' : 'text-muted'}`}>
+                  {m.momentQuote.type === 'text' ? `“${m.momentQuote.body}”` : m.momentQuote.body ? m.momentQuote.body : m.momentQuote.type === 'video' ? '🎬 Video' : '📷 Photo'}
+                </span>
+              </div>
+              {m.momentQuote.type === 'text' ? (
+                <div className="w-[72px] shrink-0 flex items-center justify-center p-1.5 text-center font-serif italic text-[10px] leading-tight text-[#F2EFE9] overflow-hidden" style={{ background: m.momentQuote.background }}>
+                  <span className="line-clamp-4">{m.momentQuote.body}</span>
+                </div>
+              ) : m.momentQuote.previewId ? (
+                <img src={fileUrl(m.momentQuote.previewId)} alt="Moment" className="w-[72px] h-[72px] shrink-0 object-cover bg-soft" loading="lazy" />
+              ) : null}
+            </div>
+          )}
           {m.replyTo && !deleted && (
             <button
               onClick={() => onJumpTo(m.replyTo.id)}
