@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
-import { Avatar, Badge, Icon, Logo, Menu, SearchField, Spinner } from '../components/ui.jsx';
+import { Avatar, Badge, Confirm, Icon, Logo, Menu, Modal, SearchField, Spinner } from '../components/ui.jsx';
 import Ticks from '../components/Ticks.jsx';
 import { listTime, messagePreview } from '../lib/format.js';
 import { messageStatus } from '../lib/chat.js';
@@ -15,8 +15,31 @@ const FILTERS = [
   ['favourites', 'Favourites'],
 ];
 
-export function ChatRow({ c, active, me, typingInfo, onClick, compact }) {
+export function ChatRow({ c, active, me, typingInfo, onClick, onLongPress, compact }) {
   const last = c.lastMessage;
+  // Press and hold (touch) or right-click (mouse) opens the chat's quick actions without opening the chat
+  const timer = useRef(null);
+  const start = useRef(null);
+  const fired = useRef(false);
+  const down = (e) => {
+    fired.current = false;
+    if (!onLongPress || e.pointerType === 'mouse') return;
+    start.current = { x: e.clientX, y: e.clientY };
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      fired.current = true;
+      navigator.vibrate?.(15);
+      onLongPress(c, true);
+    }, 450);
+  };
+  const move = (e) => {
+    if (start.current && Math.hypot(e.clientX - start.current.x, e.clientY - start.current.y) > 10) clearTimeout(timer.current);
+  };
+  const cancel = () => clearTimeout(timer.current);
+  const click = () => {
+    if (fired.current) { fired.current = false; return; }
+    onClick();
+  };
   const mine = last?.sender?.id === me.id;
   const typers = typingInfo ? Object.entries(typingInfo) : [];
   let preview;
@@ -39,8 +62,14 @@ export function ChatRow({ c, active, me, typingInfo, onClick, compact }) {
   }
   return (
     <button
-      onClick={onClick}
-      className={`w-full flex items-center gap-3.5 px-4 ${compact ? 'py-2.5' : 'py-3.5'} text-left transition ${
+      onClick={click}
+      onPointerDown={down}
+      onPointerMove={move}
+      onPointerUp={cancel}
+      onPointerCancel={cancel}
+      onPointerLeave={cancel}
+      onContextMenu={(e) => { if (!onLongPress) return; e.preventDefault(); onLongPress(c, false); }}
+      className={`w-full flex items-center gap-3.5 px-4 select-none [-webkit-touch-callout:none] ${compact ? 'py-2.5' : 'py-3.5'} text-left transition ${
         active ? 'bg-gold-soft/60 dark:bg-gold/10' : 'hover:bg-soft/60'
       }`}
     >
@@ -72,7 +101,29 @@ export default function ChatList() {
   const [q, setQ] = useState('');
   const [filter, setFilter] = useState('all');
   const [showArchived, setShowArchived] = useState(false);
-  const { setPrefs, toast } = useApp();
+  const { setPrefs, toast, upsertConversation, patchConversation, markRead } = useApp();
+  const [menuFor, setMenuFor] = useState(null);
+  // While the finger that opened the sheet is still down (and for a moment after lifting), ignore taps on the
+  // sheet: the browser sends the release as a tap to whatever is now under the finger.
+  const blockUntil = useRef(0);
+  const guarded = () => Date.now() < blockUntil.current;
+  const openMenu = (c, viaTouch = false) => {
+    if (blockUntil.current === Infinity) return; // same press already opened it
+    if (viaTouch) {
+      blockUntil.current = Infinity;
+      const events = ['pointerup', 'pointercancel', 'touchend', 'touchcancel'];
+      const release = () => {
+        blockUntil.current = Date.now() + 500;
+        events.forEach((ev) => document.removeEventListener(ev, release, true));
+      };
+      events.forEach((ev) => document.addEventListener(ev, release, true));
+      setTimeout(() => { if (blockUntil.current === Infinity) release(); }, 6000);
+    } else {
+      blockUntil.current = Date.now() + 500;
+    }
+    setMenuFor(c);
+  };
+  const [confirm, setConfirm] = useState(null); // { kind, c }
   const [askNotif, setAskNotif] = useState(() => {
     try { return 'Notification' in window && Notification.permission === 'default' && !localStorage.getItem('gochat.notifAsked'); } catch { return false; }
   });
@@ -114,6 +165,37 @@ export default function ChatList() {
   };
 
   const open = (c) => navigate(`/chat/${c.id}`);
+
+  // ---- quick actions for a chat (long press on the row) ----
+  const setting = async (c, patch, done) => {
+    try {
+      upsertConversation(await api(`/conversations/${c.id}/settings`, { method: 'PATCH', body: patch }));
+      toast(done);
+    } catch (e) {
+      toast(e.message, { error: true });
+    }
+  };
+  const goInfo = (c) => navigate(c.type === 'group' ? `/chat/${c.id}/info` : `/user/${c.other?.id}`);
+  const leaveIfActive = (c) => { if (activeId === c.id) navigate('/'); };
+  const sheetActions = (c) => {
+    const group = c.type === 'group';
+    return [
+      { icon: group ? 'groups' : 'person', label: group ? 'Group info' : 'View contact', fn: () => goInfo(c) },
+      { icon: 'perm_media', label: 'Media, links & docs', fn: () => goInfo(c) },
+      c.unread > 0 && { icon: 'mark_chat_read', label: 'Mark as read', fn: () => markRead(c.id) },
+      '-',
+      { icon: c.muted ? 'notifications' : 'notifications_off', label: c.muted ? 'Unmute' : 'Mute notifications', fn: () => setting(c, { muted: !c.muted }, c.muted ? 'Unmuted' : 'Muted') },
+      { icon: 'push_pin', label: c.pinned ? 'Unpin chat' : 'Pin chat', fn: () => setting(c, { pinned: !c.pinned }, c.pinned ? 'Chat unpinned' : 'Chat pinned') },
+      { icon: 'favorite', label: c.favourite ? 'Remove from favourites' : 'Add to favourites', fn: () => setting(c, { favourite: !c.favourite }, c.favourite ? 'Removed from favourites' : 'Added to favourites') },
+      { icon: 'inventory_2', label: c.archived ? 'Unarchive chat' : 'Archive chat', fn: () => { setting(c, { archived: !c.archived }, c.archived ? 'Chat unarchived' : 'Chat archived'); if (!c.archived) leaveIfActive(c); } },
+      '-',
+      !group && c.other && { icon: 'block', label: c.blockedByMe ? 'Unblock' : 'Block', danger: true, fn: () => setConfirm({ kind: 'block', c }) },
+      !group && { icon: 'delete', label: 'Delete chat', danger: true, fn: () => setConfirm({ kind: 'delete', c }) },
+      group && { icon: 'cleaning_services', label: 'Clear chat', danger: true, fn: () => setConfirm({ kind: 'clear', c }) },
+      group && { icon: 'logout', label: 'Exit group', danger: true, fn: () => setConfirm({ kind: 'leave', c }) },
+    ].filter(Boolean);
+  };
+  const cc = confirm?.c;
 
   return (
     <div className="min-h-full flex flex-col relative">
@@ -189,7 +271,7 @@ export default function ChatList() {
               </div>
               <div className="mx-3 card overflow-hidden divide-y divide-[rgb(var(--line)/0.15)]">
                 {pinned.map((c) => (
-                  <ChatRow key={c.id} c={c} me={me} active={c.id === activeId} typingInfo={typing[c.id]} onClick={() => open(c)} />
+                  <ChatRow key={c.id} c={c} me={me} active={c.id === activeId} typingInfo={typing[c.id]} onClick={() => open(c)} onLongPress={openMenu} />
                 ))}
               </div>
             </>
@@ -203,7 +285,7 @@ export default function ChatList() {
               </div>
               <div className="mx-3 card overflow-hidden divide-y divide-[rgb(var(--line)/0.15)]">
                 {rest.map((c) => (
-                  <ChatRow key={c.id} c={c} me={me} active={c.id === activeId} typingInfo={typing[c.id]} onClick={() => open(c)} />
+                  <ChatRow key={c.id} c={c} me={me} active={c.id === activeId} typingInfo={typing[c.id]} onClick={() => open(c)} onLongPress={openMenu} />
                 ))}
               </div>
             </>
@@ -239,6 +321,90 @@ export default function ChatList() {
           )}
         </div>
       )}
+
+
+      <Modal open={!!menuFor} onClose={() => { if (!guarded()) setMenuFor(null); }}>
+        {menuFor && (
+          <div className="pt-4">
+            <div className="flex items-center gap-3 pb-3 mb-1 border-b hairline">
+              <Avatar id={menuFor.avatarId} name={menuFor.name} size={44} group={menuFor.type === 'group'} />
+              <div className="min-w-0">
+                <div className="font-serif text-[19px] leading-6 text-ink truncate">{menuFor.name}</div>
+                <div className="text-xs text-muted">{menuFor.type === 'group' ? `${menuFor.memberCount} members` : 'Chat options'}</div>
+              </div>
+            </div>
+            <div className="-mx-5">
+              {sheetActions(menuFor).map((a, i) =>
+                a === '-' ? (
+                  <div key={i} className="my-1 border-t hairline" />
+                ) : (
+                  <button
+                    key={a.label}
+                    className={`w-full flex items-center gap-4 px-6 py-3.5 text-[15px] text-left hover:bg-soft ${a.danger ? 'text-danger' : 'text-ink'}`}
+                    onClick={() => { if (guarded()) return; const c = menuFor; setMenuFor(null); a.fn(c); }}
+                  >
+                    <Icon name={a.icon} size={21} className={a.danger ? '' : 'text-gold-ink'} /> {a.label}
+                  </button>
+                )
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <Confirm
+        open={confirm?.kind === 'block'}
+        onClose={() => setConfirm(null)}
+        title={cc?.blockedByMe ? `Unblock ${cc?.name}?` : `Block ${cc?.name}?`}
+        text={cc?.blockedByMe ? 'They will be able to message and call you again.' : 'Blocked contacts cannot call you or send you messages.'}
+        confirmLabel={cc?.blockedByMe ? 'Unblock' : 'Block'}
+        danger={!cc?.blockedByMe}
+        onConfirm={async () => {
+          await api(`/users/${cc.other.id}/block`, { method: cc.blockedByMe ? 'DELETE' : 'POST' });
+          patchConversation(cc.id, () => ({ blockedByMe: !cc.blockedByMe }));
+          toast(cc.blockedByMe ? 'Contact unblocked' : 'Contact blocked');
+        }}
+      />
+      <Confirm
+        open={confirm?.kind === 'delete'}
+        onClose={() => setConfirm(null)}
+        title={`Delete chat with ${cc?.name}?`}
+        text="The conversation is removed from your list. It comes back if they message you again. Their copy is not affected."
+        confirmLabel="Delete chat"
+        danger
+        onConfirm={async () => {
+          await api(`/conversations/${cc.id}`, { method: 'DELETE' });
+          setConversations((l) => l.filter((x) => x.id !== cc.id));
+          leaveIfActive(cc);
+          toast('Chat deleted');
+        }}
+      />
+      <Confirm
+        open={confirm?.kind === 'clear'}
+        onClose={() => setConfirm(null)}
+        title="Clear this chat?"
+        text="Messages will be removed from your view only. Others keep their copy."
+        confirmLabel="Clear chat"
+        danger
+        onConfirm={async () => {
+          upsertConversation(await api(`/conversations/${cc.id}/clear`, { method: 'POST' }));
+          toast('Chat cleared');
+        }}
+      />
+      <Confirm
+        open={confirm?.kind === 'leave'}
+        onClose={() => setConfirm(null)}
+        title={`Exit "${cc?.name}"?`}
+        text="You will stop receiving messages from this group."
+        confirmLabel="Exit group"
+        danger
+        onConfirm={async () => {
+          await api(`/conversations/${cc.id}/members/${me.id}`, { method: 'DELETE' });
+          setConversations((l) => l.filter((x) => x.id !== cc.id));
+          leaveIfActive(cc);
+          toast('You left the group');
+        }}
+      />
 
       <button
         onClick={() => navigate('/new')}
