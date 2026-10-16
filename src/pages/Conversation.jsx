@@ -548,6 +548,7 @@ function Conversation({ id }) {
                     term={term}
                     highlighted={highlight === m.id}
                     onOpenActions={(msg) => (msg.failed ? retry(msg) : setActionsFor(msg))}
+                    onReply={disabledNotice ? undefined : (msg) => setReplyTo(msg)}
                     onReact={react}
                     onOpenMedia={(msg) => setLightbox(msg)}
                     onJumpTo={jumpTo}
