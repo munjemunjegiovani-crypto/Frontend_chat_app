@@ -574,7 +574,7 @@ function Conversation({ id }) {
       {!atBottom && !loading && (
         <button
           onClick={() => scrollToBottom(true)}
-          className="absolute right-4 bottom-24 z-10 w-11 h-11 rounded-full bg-card border hairline-strong shadow-lvl2 flex items-center justify-center text-gold-ink"
+          className={`absolute right-4 ${replyTo || editing ? 'bottom-44' : 'bottom-24'} transition-[bottom] duration-200 z-10 w-11 h-11 rounded-full bg-card border hairline-strong shadow-lvl2 flex items-center justify-center text-gold-ink`}
           aria-label="Scroll to latest"
         >
           <Icon name="keyboard_double_arrow_down" />
