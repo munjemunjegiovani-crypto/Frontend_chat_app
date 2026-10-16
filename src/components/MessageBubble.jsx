@@ -145,7 +145,11 @@ export default function MessageBubble({
                 </div>
               ) : m.momentQuote.previewId ? (
                 <img src={fileUrl(m.momentQuote.previewId)} alt="Moment" className="w-[72px] h-[72px] shrink-0 object-cover bg-soft" loading="lazy" />
-              ) : null}
+              ) : (
+                <div className="w-[72px] h-[72px] shrink-0 flex items-center justify-center bg-[#14213D] text-[#C9A86A]">
+                  <Icon name={m.momentQuote.type === 'video' ? 'videocam' : 'image'} size={28} />
+                </div>
+              )}
             </div>
           )}
           {m.replyTo && !deleted && (

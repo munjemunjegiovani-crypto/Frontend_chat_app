@@ -111,6 +111,7 @@ export default function MomentViewer() {
         type: m.type,
         body: m.body || '',
         background: m.background,
+        momentId: m.id,
         ownerId: uid,
         ownerName: group.user.name,
         previewId,
