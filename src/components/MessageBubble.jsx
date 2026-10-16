@@ -34,9 +34,12 @@ function RichText({ text, term }) {
 
 export default function MessageBubble({
   m, mine, showSender, firstInGroup, lastInGroup, isGroup, status, meId, term,
-  onOpenActions, onReact, onOpenMedia, onJumpTo, onOpenProfile, highlighted,
+  onOpenActions, onReact, onOpenMedia, onJumpTo, onOpenProfile, onReply, highlighted,
 }) {
   const press = useRef(null);
+  const swipe = useRef(null);
+  const rowRef = useRef(null);
+  const iconRef = useRef(null);
   const deleted = !!m.deletedAt;
 
   if (m.type === 'system') {
@@ -55,6 +58,48 @@ export default function MessageBubble({
     }, 450);
   };
   const cancelPress = () => clearTimeout(press.current);
+
+  // Swipe right to reply (touch), like WhatsApp: drag the message, release, and the reply bar opens
+  const SWIPE_AT = 64;
+  const canSwipe = !!onReply && !deleted && !m.pending && !m.failed;
+  const setSwipe = (dx, animate) => {
+    const row = rowRef.current, icon = iconRef.current;
+    if (!row) return;
+    row.style.transition = animate ? 'transform .2s ease' : 'none';
+    row.style.transform = dx ? `translateX(${dx}px)` : '';
+    if (icon) {
+      const k = Math.min(dx / SWIPE_AT, 1);
+      icon.style.opacity = String(Math.max(k, 0));
+      icon.style.transform = `translateY(-50%) scale(${0.6 + 0.4 * Math.max(k, 0)})`;
+      icon.style.background = dx >= SWIPE_AT ? 'var(--gold, #C9A86A)' : '';
+    }
+  };
+  const swipeDown = (e) => {
+    if (!canSwipe || e.pointerType === 'mouse') return;
+    swipe.current = { x: e.clientX, y: e.clientY, active: false, dead: false, dx: 0, buzzed: false };
+  };
+  const swipeMove = (e) => {
+    const s = swipe.current;
+    if (!s || s.dead) return;
+    const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    if (!s.active) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { s.dead = true; return; }
+      if (dx > 12 && dx > Math.abs(dy) * 1.2) { s.active = true; cancelPress(); }
+      else return;
+    }
+    s.dx = Math.max(0, dx);
+    const shown = s.dx > 90 ? 90 + (s.dx - 90) * 0.2 : s.dx;
+    setSwipe(shown, false);
+    if (s.dx >= SWIPE_AT && !s.buzzed) { s.buzzed = true; navigator.vibrate?.(12); }
+    if (s.dx < SWIPE_AT) s.buzzed = false;
+  };
+  const swipeEnd = () => {
+    const s = swipe.current;
+    swipe.current = null;
+    if (!s || !s.active) return;
+    setSwipe(0, true);
+    if (s.dx >= SWIPE_AT) onReply(m);
+  };
 
   const reactions = Object.values(
     (m.reactions || []).reduce((acc, r) => {
@@ -82,6 +127,24 @@ export default function MessageBubble({
 
   return (
     <div
+      className="relative overflow-x-hidden touch-pan-y"
+      onPointerDown={swipeDown}
+      onPointerMove={swipeMove}
+      onPointerUp={swipeEnd}
+      onPointerCancel={swipeEnd}
+    >
+    {canSwipe && (
+      <span
+        ref={iconRef}
+        aria-hidden="true"
+        className={`absolute left-4 w-9 h-9 rounded-full bg-soft text-ink flex items-center justify-center pointer-events-none ${firstInGroup ? 'top-[calc(50%+6px)]' : 'top-1/2'}`}
+        style={{ opacity: 0, transform: 'translateY(-50%) scale(.6)' }}
+      >
+        <Icon name="reply" size={20} />
+      </span>
+    )}
+    <div
+      ref={rowRef}
       id={`msg-${m.id}`}
       className={`group flex items-end gap-2 px-3 md:px-6 ${firstInGroup ? 'mt-3' : 'mt-[3px]'} ${mine ? 'justify-end' : 'justify-start'} ${
         highlighted ? 'animate-pulse' : ''
@@ -246,6 +309,7 @@ export default function MessageBubble({
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
